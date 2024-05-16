@@ -79,7 +79,7 @@ def main():
                 print("Incident not found.")
 
         elif choice == '6':
-    # Collect input for creating a new case
+            # Collect input for creating a new case
             caseID = int(input("Enter Case ID: "))
             caseDescription = input("Enter Case Description: ")
             incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')

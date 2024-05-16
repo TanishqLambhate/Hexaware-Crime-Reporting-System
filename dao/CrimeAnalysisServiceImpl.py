@@ -6,6 +6,7 @@ from entity.Reports import Report
 from dao.ICrimeAnalysisService import ICrimeAnalysisService
 from datetime import datetime
 from util.DBconn import DBConnection
+from exception.IncidentNumberNotFoundException import IncidentNumberNotFoundException
 
 class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
     def createIncident(self, incident):
@@ -14,31 +15,40 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
                 "INSERT INTO Incidents (incidentID, incidentType, incidentDate,Location_Longitude,Location_Latitude,description,status,victimID,suspectID) VALUES (?, ?, ?,?,?,?,?, ?, ?)",
                 (incident.incidentID, incident.incidentType, incident.incidentDate,incident.Location_Longitude,incident.Location_Latitude,incident.description,incident.status,incident.victimID,incident.suspectID),
             )
-            self.conn.commit()  # Permanent storing | If no commit then no data
+            self.conn.commit()  
         except Exception as e:
             print(e)
         print("Creating incident")
         return True
+    
 
     def updateIncidentStatus(self, status, incident_id):
-        
-        self.cursor.execute(
-            """
-            Update Incidents
-            Set status = ?
-            where incidentID = ?
-            """,
-            (status, incident_id),
-        )
-        self.conn.commit()
-        print(f"Updating status for incident {incident_id}")
-        return True
+        try:
+            self.cursor.execute(
+                """
+                Update Incidents
+                Set status = ?
+                where incidentID = ?
+                """,
+                (status, incident_id),
+            )
+            self.conn.commit()
+            print(f"Updating status for incident {incident_id}")
+            return True
+        except IncidentNumberNotFoundException as I:
+            print(I)
+        except Exception as e:
+            print(e)
+
+
+    
+       
 
     def getIncidentsInDateRange(self, start_date, end_date):
         
         try:
             self.cursor.execute("SELECT * FROM Incidents WHERE incidentDate >= ? AND incidentDate <= ?;",(start_date,end_date))
-            Incidents = self.cursor.fetchall()  # Get all data
+            Incidents = self.cursor.fetchall()  
             for Incident in Incidents:
                 print(Incident)
         except Exception as e:
@@ -51,7 +61,7 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
        
         try:
             self.cursor.execute("Select * from Incidents where incidentId=?",(incidentID))
-            Incidents = self.cursor.fetchall()  # Get all data
+            Incidents = self.cursor.fetchall()  
             return Incidents
         except Exception as e:
             print(e)
@@ -66,7 +76,7 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
                 "INSERT INTO Reports (reportID, incidentID, reportingOfficer, reportDate, reportDetails, status) VALUES (?, ?, ?,?,?,?)",
                 (report.reportID, report.incidentID, report.reportingOfficer,report.reportDate,report.reportDetails,report.status),
             )
-            self.conn.commit()  # Permanent storing | If no commit then no data
+            self.conn.commit()   
         except Exception as e:
             print(e)
         
@@ -76,9 +86,8 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
     def createCase(self, caseID, case_description, incidents):
 
         try:
-            print(incidents)
             incident_ids = [incident[0][0] for incident in incidents]
-            print("*****",incident_ids)
+            # print("*****",incident_ids)
             incident_ids_str = ','.join(map(str, incident_ids))
             self.cursor.execute(
                 "INSERT INTO [Case] (caseID, caseDescription, incidentIDs) VALUES (?, ?, ?)",
@@ -92,10 +101,9 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
             return None
 
     def getCaseDetails(self, case_id):
-        # Implement logic to get details of a specific case
         try:
             self.cursor.execute("Select * from [Case] where caseID=?",(case_id))
-            Cases = self.cursor.fetchall()  # Get all data
+            Cases = self.cursor.fetchall() 
             return Cases
         except Exception as e:
             print(e)
@@ -103,7 +111,6 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
         return Case()
 
     def updateCaseDetails(self, case):
-        # Implement logic to update case details
         self.cursor.execute(
             """
             Update [Case]
@@ -117,7 +124,12 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
         return True
 
     def getAllCases(self):
-        # Implement logic to get a list of all cases
+        try:
+            self.cursor.execute("Select * from [Case] ")
+            Cases = self.cursor.fetchall()  
+            return Cases
+        except Exception as e:
+            print(e)
         print("Getting all cases")
         return []
 

@@ -1,6 +1,3 @@
-from datetime import datetime
-# from typing import Collection
-# from entity.Incidents import Incident
-# from entity.Case import Case
-# from entity.Reports import Report
-# from dao.CrimeAnalysisServiceImpl import CrimeAnalysisServiceImpl
+  # retrieved_incident = service.searchIncidents(incident.incidentID)
+        # self.assertEqual(retrieved_incident.incidentType, incident.incidentType)
+        # self.assertEqual(retrieved_incident.incidentDate, incident.incidentDate)
