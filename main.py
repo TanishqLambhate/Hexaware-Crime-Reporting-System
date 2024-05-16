@@ -79,15 +79,24 @@ def main():
                 print("Incident not found.")
 
         elif choice == '6':
-            # Collect input for creating a new case
+    # Collect input for creating a new case
             caseID = int(input("Enter Case ID: "))
             caseDescription = input("Enter Case Description: ")
             incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')
-            incidents = [service.getIncidentByID(int(incidentID)) for incidentID in incidentIDs if service.getIncidentByID(int(incidentID))]
-            case = Case(caseID, caseDescription, incidents)
-            createdCase = service.createCase(caseDescription, incidents)
-            print("Case created successfully!" if createdCase else "Failed to create case.")
-
+            incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs]
+            # Filter out incidents that were not found
+            incidents = [incident for incident in incidents if incident]
+            print(incidents)
+            # Check if there are valid incidents
+            if incidents:
+                createdCase = service.createCase(caseID, caseDescription, incidents)
+                if createdCase is not None:
+                    print("Case created successfully!")
+                else:
+                    print("Failed to create case.")
+            else:
+                print("No valid incidents found.")
+                
         elif choice == '7':
             # Collect input for getting case details
             caseID = int(input("Enter Case ID: "))
@@ -99,7 +108,7 @@ def main():
             caseID = int(input("Enter Case ID: "))
             caseDescription = input("Enter new Case Description: ")
             incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')
-            incidents = [service.getIncidentByID(int(incidentID)) for incidentID in incidentIDs if service.getIncidentByID(int(incidentID))]
+            incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs if service.getIncidentByID(int(incidentID))]
             case = Case(caseID, caseDescription, incidents)
             success = service.updateCaseDetails(case)
             print("Case updated successfully!" if success else "Failed to update case.")

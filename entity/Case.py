@@ -1,6 +1,6 @@
-
+from entity.Incidents import Incident
 class Case:
-    def __init__(self, caseID: int, caseDescription: str):
+    def __init__(self, caseID: int, caseDescription: str,incidents):
         self.caseID = caseID
         self.caseDescription = caseDescription
-        # self.incidents = incidents
+        self.incidents = incidents
