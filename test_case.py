@@ -8,10 +8,27 @@ from datetime import datetime
 
 
 class TestCrimeAnalysisService(unittest.TestCase):
+    def setUp(self):
+        self.service=CrimeAnalysisServiceImpl()
+
+    def test_add_incident(self):
+        incidentID= 20
+        incidentType= "Robbery"
+        incidentDate= '2024-01-01'
+        Location_Longitude= 40.71280000
+        Location_Latitude= -18.24370000
+        description= "Robbery occurred at the bank."
+        status= "Open"
+        victimID= 1
+        suspectID= 2
+        self.test_incident = Incident(incidentID, incidentType, incidentDate,Location_Longitude,Location_Latitude,description,status,victimID,suspectID)
+        self.test_movie_id = self.service.createIncident(self.test_incident)
+        self.assertIsNotNone(self.test_movie_id)
+
     def test_create_incident_success(self):
         # Mock user input
         user_input = {
-            "incidentID": 16,
+            "incidentID": 19,
             "incidentType": "Robbery",
             "incidentDate": '2024-01-01',
             "Location_Longitude": 40.71280000,
