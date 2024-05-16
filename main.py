@@ -108,7 +108,7 @@ def main():
             caseID = int(input("Enter Case ID: "))
             caseDescription = input("Enter new Case Description: ")
             incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')
-            incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs if service.getIncidentByID(int(incidentID))]
+            incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs if service.searchIncidents(int(incidentID))]
             case = Case(caseID, caseDescription, incidents)
             success = service.updateCaseDetails(case)
             print("Case updated successfully!" if success else "Failed to update case.")

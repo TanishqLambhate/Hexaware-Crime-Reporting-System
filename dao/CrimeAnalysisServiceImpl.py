@@ -104,7 +104,15 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
 
     def updateCaseDetails(self, case):
         # Implement logic to update case details
-        
+        self.cursor.execute(
+            """
+            Update [Case]
+            Set caseDescription = ?
+            where caseID = ?
+            """,
+            (case.caseDescription, case.caseID),
+        )
+        self.conn.commit()
         print(f"Updating case details for case {case}")
         return True
 
