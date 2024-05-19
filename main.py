@@ -67,7 +67,7 @@ def main():
             incident = service.searchIncidents(incidentID)
             if incident:
                 reportID = int(input("Enter Report ID: "))
-                incidentID = int(input("Enter Incident ID: "))
+                # incidentID = int(input("Enter Incident ID: "))
                 reportingOfficer = input("Enter Reporting officer Id: ")
                 reportDate = datetime.strptime(input("Enter Report Date (YYYY-MM-DD): "), '%Y-%m-%d')
                 reportDetails = input("Enter Report Details: ")
@@ -75,6 +75,7 @@ def main():
                 report = Report(reportID, incidentID, reportingOfficer, reportDate, reportDetails, status)
                 success = service.generateIncidentReport(report)
                 print("report created")
+                print(success)
             else:
                 print("Incident not found.")
 
@@ -106,12 +107,18 @@ def main():
         elif choice == '8':
             # Collect input for updating case details
             caseID = int(input("Enter Case ID: "))
-            caseDescription = input("Enter new Case Description: ")
-            incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')
-            incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs if service.searchIncidents(int(incidentID))]
-            case = Case(caseID, caseDescription, incidents)
-            success = service.updateCaseDetails(case)
-            print("Case updated successfully!" if success else "Failed to update case.")
+            case = service.getCaseDetails(caseID)
+            if case:
+                caseDescription = input("Enter new Case Description: ")
+                # incidentIDs = input("Enter Incident IDs (comma separated): ").split(',')
+                # incidents = [service.searchIncidents(int(incidentID)) for incidentID in incidentIDs if service.searchIncidents(int(incidentID))]
+                # case = Case(caseID, caseDescription, incidents)
+                # case.caseDescription = caseDescription
+                # print(case.caseDescription)
+                success = service.updateCaseDetails(caseID,caseDescription)
+                print("Case updated successfully!" if success else "Failed to update case.")
+            else:
+                print("Case not found.")
 
         elif choice == '9':
             # Get all cases

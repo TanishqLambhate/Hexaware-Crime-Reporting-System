@@ -5,8 +5,10 @@ from entity.Case import Case
 from entity.Reports import Report
 from dao.ICrimeAnalysisService import ICrimeAnalysisService
 from datetime import datetime
-from util.DBconn import DBConnection
+# from util.DBconn import DBConnection
 from exception.IncidentNumberNotFoundException import IncidentNumberNotFoundException
+
+from util.DBConnUtil import DBConnection
 
 class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
     def createIncident(self, incident):
@@ -62,6 +64,8 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
         try:
             self.cursor.execute("Select * from Incidents where incidentId=?",(incidentID))
             Incidents = self.cursor.fetchall()  
+            if len(Incidents)==0:
+                raise IncidentNumberNotFoundException
             return Incidents
         except Exception as e:
             print(e)
@@ -76,12 +80,15 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
                 "INSERT INTO Reports (reportID, incidentID, reportingOfficer, reportDate, reportDetails, status) VALUES (?, ?, ?,?,?,?)",
                 (report.reportID, report.incidentID, report.reportingOfficer,report.reportDate,report.reportDetails,report.status),
             )
-            self.conn.commit()   
+            self.conn.commit()
+            self.cursor.execute("Select * from Reports where incidentID=?",(report.incidentID))
+            Report = self.cursor.fetchall() 
+            return Report   
         except Exception as e:
             print(e)
         
         print("Generating incident report")
-        return 
+        return []
 
     def createCase(self, caseID, case_description, incidents):
 
@@ -110,17 +117,17 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
         print(f"Getting details for case {case_id}")
         return Case()
 
-    def updateCaseDetails(self, case):
+    def updateCaseDetails(self, caseID,caseDescription):
         self.cursor.execute(
             """
             Update [Case]
             Set caseDescription = ?
             where caseID = ?
             """,
-            (case.caseDescription, case.caseID),
+            (caseDescription, caseID),
         )
         self.conn.commit()
-        print(f"Updating case details for case {case}")
+        print(f"Updating case details for case {caseID}")
         return True
 
     def getAllCases(self):
