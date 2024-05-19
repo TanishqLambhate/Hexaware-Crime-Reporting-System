@@ -50,9 +50,12 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
         
         try:
             self.cursor.execute("SELECT * FROM Incidents WHERE incidentDate >= ? AND incidentDate <= ?;",(start_date,end_date))
-            Incidents = self.cursor.fetchall()  
-            for Incident in Incidents:
-                print(Incident)
+            # Incidents = self.cursor.fetchall()  
+            # for Incident in Incidents:
+            #     print(Incident)
+            rows = self.cursor.fetchall()
+            incidents = [Incident(*row) for row in rows]
+            return incidents
         except Exception as e:
             print(e)
 
@@ -67,6 +70,9 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
             if len(Incidents)==0:
                 raise IncidentNumberNotFoundException
             return Incidents
+        except IncidentNumberNotFoundException as infe:
+            print(infe)
+            return []
         except Exception as e:
             print(e)
 
@@ -82,13 +88,11 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
             )
             self.conn.commit()
             self.cursor.execute("Select * from Reports where incidentID=?",(report.incidentID))
-            Report = self.cursor.fetchall() 
-            return Report   
+            report_details = self.cursor.fetchall()
+            return report_details
         except Exception as e:
-            print(e)
-        
-        print("Generating incident report")
-        return []
+            print("Failed to generate incident report:", e)
+            return []
 
     def createCase(self, caseID, case_description, incidents):
 
@@ -110,12 +114,11 @@ class CrimeAnalysisServiceImpl(ICrimeAnalysisService,DBConnection):
     def getCaseDetails(self, case_id):
         try:
             self.cursor.execute("Select * from [Case] where caseID=?",(case_id))
-            Cases = self.cursor.fetchall() 
-            return Cases
+            case_details  = self.cursor.fetchall() 
+            return case_details
         except Exception as e:
-            print(e)
-        print(f"Getting details for case {case_id}")
-        return Case()
+            print(f"Failed to get details for case {case_id}: {e}")
+            return []
 
     def updateCaseDetails(self, caseID,caseDescription):
         self.cursor.execute(

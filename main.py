@@ -4,7 +4,7 @@ from entity.Incidents import Incident
 from entity.Case import Case
 from entity.Reports import Report
 from dao.CrimeAnalysisServiceImpl import CrimeAnalysisServiceImpl
-
+from tabulate import tabulate
 def main():
     service = CrimeAnalysisServiceImpl()
     
@@ -51,15 +51,24 @@ def main():
             startDate = datetime.strptime(input("Enter Start Date (YYYY-MM-DD): "), '%Y-%m-%d')
             endDate = datetime.strptime(input("Enter End Date (YYYY-MM-DD): "), '%Y-%m-%d')
             incidents = service.getIncidentsInDateRange(startDate, endDate)
-            for incident in incidents:
-                print(incident)
+            if incidents:
+                headers = ["IncidentID", "IncidentType", "IncidentDate", "Latitude", "Longitude", "Description", "Status", "VictimID", "SuspectID"]
+                incident_data = [(incident.incidentID, incident.incidentType, incident.incidentDate, incident.Location_Latitude, incident.Location_Longitude, incident.description, incident.status, incident.victimID, incident.suspectID) for incident in incidents]
+                print(tabulate(incident_data, headers=headers, tablefmt="grid"))
+            else:
+                print("No incidents found in the specified date range.")
 
         elif choice == '4':
             # Collect input for searching incidents
             incidentID = input("Enter search incidentid: ")
             incidents = service.searchIncidents(incidentID)
-            for incident in incidents:
-                print(incident)
+            if incidents:
+                headers = ["IncidentID", "IncidentType", "IncidentDate", "Latitude", "Longitude", "Description", "Status", "VictimID", "SuspectID"]
+                incident_data = [(incident[0], incident[1], incident[2], incident[3], incident[4], incident[5], incident[6], incident[7], incident[8]) for incident in incidents]
+                print(tabulate(incident_data, headers=headers, tablefmt='grid'))
+            else:
+                print("No incidents found for the specified ID.")
+
 
         elif choice == '5':
             # Collect input for generating incident report
@@ -73,9 +82,12 @@ def main():
                 reportDetails = input("Enter Report Details: ")
                 status = input("Enter Status : ")
                 report = Report(reportID, incidentID, reportingOfficer, reportDate, reportDetails, status)
-                success = service.generateIncidentReport(report)
-                print("report created")
-                print(success)
+                report_details = service.generateIncidentReport(report)
+                if report_details:
+                    headers = ["ReportID", "IncidentID", "ReportingOfficer", "ReportDate", "ReportDetails", "Status"]
+                    print(tabulate(report_details, headers=headers, tablefmt='grid'))
+                else:
+                    print("Failed to create report.")
             else:
                 print("Incident not found.")
 
@@ -101,8 +113,12 @@ def main():
         elif choice == '7':
             # Collect input for getting case details
             caseID = int(input("Enter Case ID: "))
-            case = service.getCaseDetails(caseID)
-            print(case if case else "Case not found.")
+            case_details = service.getCaseDetails(caseID)
+            if case_details:
+                headers = ["CaseID", "CaseDescription", "IncidentIDs"]
+                print(tabulate(case_details, headers=headers, tablefmt='grid'))
+            else:
+                print("Case not found.")
 
         elif choice == '8':
             # Collect input for updating case details
@@ -123,8 +139,11 @@ def main():
         elif choice == '9':
             # Get all cases
             cases = service.getAllCases()
-            for case in cases:
-                print(case)
+            if cases:
+                headers = ["CaseID", "CaseDescription", "IncidentIDs"]
+                print(tabulate(cases, headers=headers, tablefmt='grid'))
+            else:
+                print("No cases found.")
 
         elif choice == '10':
             print("Exiting...")
