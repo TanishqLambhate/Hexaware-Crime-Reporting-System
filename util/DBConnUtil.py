@@ -12,4 +12,4 @@ class DBConnection:
 
     def close(self):
         self.cursor.close()
-        self.connection.close()
+        self.conn.close()

@@ -12,7 +12,7 @@ class TestCrimeAnalysisService(unittest.TestCase):
         # self.test_incident_id = self.service.createIncident(self.test_incident)
 
     def test_add_incident(self):
-        incidentID= 31
+        incidentID= 33
         incidentType= "Robbery"
         incidentDate= '2024-01-01'
         Location_Longitude= 40.71280000
@@ -28,7 +28,7 @@ class TestCrimeAnalysisService(unittest.TestCase):
     def test_create_incident_success(self):
        
         user_input = {
-            "incidentID": 30,
+            "incidentID": 32,
             "incidentType": "Robbery",
             "incidentDate": '2024-01-01',
             "Location_Longitude": 40.71280000,
